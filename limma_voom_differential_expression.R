@@ -33,7 +33,7 @@ limmavoom <- function(tcgadataframe,lfcfortreat = 0, moleculetype = "mRNA"){
   
   counts$samples$group <- group
   
-  keep <- filterByExpr(counts)
+  keep <- filterByExpr(counts, group = group)
   
   counts <- counts[keep,,
                    keep.lib.sizes = FALSE]
