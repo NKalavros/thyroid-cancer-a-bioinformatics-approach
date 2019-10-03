@@ -2,8 +2,11 @@ mirlab_tcga_analysis <- function(mrna_matrix,microrna_matrix,cancer = 1,mrna_kee
   #Packages needed
   require("miRLAB")
   require("edgeR")
-  mrna_matrix <- mrnacountmatrix
-  microrna_matrix <- mircountmatrix
+  #mrna_matrix <- mrnacountmatrix
+  #microrna_matrix <- mircountmatrix
+  #cancer <- 1
+  #mrna_keep <- 2000
+  #microrna_keep <- 100
   #Get common patients
   #Keep cancer or normals only, by default keeps only samples of cancer patients
   #Subset matrices
@@ -42,7 +45,7 @@ mirlab_tcga_analysis <- function(mrna_matrix,microrna_matrix,cancer = 1,mrna_kee
   #Get their order
   order_mrna <- order(average_expr_mrna,decreasing = TRUE)
   order_microrna <- order(average_expr_microrna, decreasing = TRUE)
-    #Get only the top expressed ones, up to K and L (set in function definition)
+  #Get only the top expressed ones, up to K and L (set in function definition)
   if(mrna_keep < nrow(mrna_matrix)){
     mrna_matrix <- mrna_matrix[order_mrna[1:mrna_keep],]
   }
@@ -54,7 +57,7 @@ mirlab_tcga_analysis <- function(mrna_matrix,microrna_matrix,cancer = 1,mrna_kee
   cause <- 1:nrow(microrna_matrix)
   effect <- (cause[length(cause)]+1):(cause[length(cause)] + nrow(mrna_matrix))
   #Create cause and effect matrix
-  dataset <- rbind(microrna_matrix,mrna_matrix)
+  dataset <- t(rbind(microrna_matrix,mrna_matrix))
   write.csv(dataset,"dataset.csv",row.names = FALSE,quote = FALSE)
   #predict miRNA targets using Mutual Information
   mi = MI("dataset.csv", cause, effect)
