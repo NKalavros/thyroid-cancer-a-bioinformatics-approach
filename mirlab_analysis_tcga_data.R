@@ -63,7 +63,7 @@ mirlab_tcga_analysis <- function(mrna_matrix,microrna_matrix,cancer = 1,mrna_kee
   mi = MI("dataset.csv", cause, effect)
   print("Mutual information analysis complete")
   #predict miRNA targets using causal inference
-  ida=IDA("dataset.csv", cause, effect, "stable", 0.01)
+  ida=IDA("dataset.csv", cause, effect, "stable.fast", 0.01)
   print("IDA analysis complete")
   #predict miRNA targets using linear regression
   lasso=Lasso(dataset, cause, effect)
