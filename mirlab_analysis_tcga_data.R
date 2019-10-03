@@ -21,6 +21,7 @@ mirlab_tcga_analysis <- function(mrna_matrix,microrna_matrix,cancer = 1,mrna_kee
   #Normalize
   common_patients_mrna <- calcNormFactors(common_patients_mrna, method = "TMM")
   common_patients_microrna <- calcNormFactors(common_patients_microrna, method = "TMM")
+  print("Normalization for both datasets complete")
   #In the interest of time, use only the 100 most highly expressed miRs
   #and the 2000 most highly expressed mRNA
   #Compute row averages
@@ -43,14 +44,12 @@ mirlab_tcga_analysis <- function(mrna_matrix,microrna_matrix,cancer = 1,mrna_kee
   dataset <- rbind(common_patients_mrna,common_patients_microrna)
   #predict miRNA targets using Mutual Information
   mi=MI(dataset, cause, effect)
-  
+  print("Mutual information analysis complete")
   #predict miRNA targets using causal inference
   ida=IDA(dataset, cause, effect, "stable", 0.01)
-  
+  print("IDA analysis complete")
   #predict miRNA targets using linear regression
   lasso=Lasso(dataset, cause, effect)
-  
+  print("Lasso analysis complete, returning.")
   return(list(mi,ida,lasso))
 }
-  
-    
