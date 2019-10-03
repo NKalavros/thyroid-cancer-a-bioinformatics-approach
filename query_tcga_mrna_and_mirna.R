@@ -34,7 +34,7 @@ obtain_data_for_mrna_and_mir <- function(project){
                 quote = TRUE, sep = "\t", row.names = TRUE, col.names = TRUE)
   }else{
     mrnacounts <- fread(paste(project,"mrnacounts.tsv",sep = "_"))
-    rownames <- mrnacounts$V1
+    rownames <- as.character(mrnacounts[,1])
     mrnacounts <- mrnacounts[,2:ncol(mrnacounts)]
     rownames(mrnacounts) <- rownames
   }
@@ -72,8 +72,7 @@ obtain_data_for_mrna_and_mir <- function(project){
                 quote = TRUE, sep = "\t", row.names = TRUE, col.names = TRUE)
   }else{
     mircounts <- fread(paste(project,"mircounts.tsv",sep = "_"))
-    head(colnames(mircounts))
-    rownames <- mircounts$V1
+    rownames <- as.character(mircounts[,1])
     mircounts <- mircounts[,2:ncol(mircounts)]
     rownames(mircounts) <- rownames
   }
@@ -83,5 +82,3 @@ obtain_data_for_mrna_and_mir <- function(project){
   
   return("Function complete, the countmatrices have been assigned to your global enviroment")
 }
-
-    
