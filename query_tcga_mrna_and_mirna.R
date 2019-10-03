@@ -4,7 +4,7 @@ obtain_data_for_mrna_and_mir <- function(project){
   require(data.table)
   #Begin with mRNA
   
-  if(!file.exists(paste(project,"mrnacounts",sep = "_"))){
+  if(!file.exists(paste(project,"mrnacounts.tsv",sep = "_"))){
     
 
     projectmrnaquery <- GDCquery(project = project,
@@ -17,21 +17,23 @@ obtain_data_for_mrna_and_mir <- function(project){
                 method = "client")
     
     #Prepare the data
-    mrnacounts <- GDCprepare(projectmrnaquery, save = FALSE, summarizedExperiment = FALSE)
+    mrnacounts <- as.data.frame(GDCprepare(projectmrnaquery, save = FALSE, summarizedExperiment = FALSE))
     
     #Edit the mRNA sample matrix as needed
     mrnacounts <- mrnacounts[6:nrow(mrnacounts),]
     
-    rownames(mrnacounts) <- mrnacounts$X1
+    rownames <- mrnacounts[,1]
     
     mrnacounts <- mrnacounts[,2:ncol(mrnacounts)]
     
+    rownames(mrnacounts) <- rownames
+    
     #Write the new matrices in the working directory
     write.table(mrnacounts,
-                file = paste(project,"mrnacounts",sep = "_"),
-                quote = TRUE, sep = "\t")
+                file = paste(project,"mrnacounts.tsv",sep = "_"),
+                quote = TRUE, sep = "\t", row.names = TRUE, col.names = TRUE)
   }else{
-    mrnacounts <- fread(paste(project,"mrnacounts",sep = "_"))
+    mrnacounts <- fread(paste(project,"mrnacounts.tsv",sep = "_"))
     rownames <- mrnacounts$V1
     mrnacounts <- mrnacounts[,2:ncol(mrnacounts)]
     rownames(mrnacounts) <- rownames
@@ -41,7 +43,7 @@ obtain_data_for_mrna_and_mir <- function(project){
   
   #Same for miRs
   
-  if(!file.exists(paste(project,"mircounts",sep = "_"))){
+  if(!file.exists(paste(project,"mircounts.tsv",sep = "_"))){
     projectmirquery <- GDCquery(project = project,
                                 data.category = "Transcriptome Profiling",
                                 data.type = "miRNA Expression Quantification",
@@ -50,10 +52,10 @@ obtain_data_for_mrna_and_mir <- function(project){
     GDCdownload(projectmirquery,
                 method = 'client')
     
-    mircounts <- GDCprepare(projectmirquery, save = FALSE, summarizedExperiment = FALSE)
+    mircounts <- as.data.frame(GDCprepare(projectmirquery, save = FALSE, summarizedExperiment = FALSE))
     
     #Edit the miR sample matrix as needed
-    rownames(mircounts) <- mircounts$miRNA_ID
+    rownames <- mircounts$miRNA_ID
     
     mircounts <- mircounts[,2:ncol(mircounts)]
     
@@ -63,11 +65,13 @@ obtain_data_for_mrna_and_mir <- function(project){
     
     colnames(mircounts) <- gsub("read_count_","",colnames(mircounts))
     
+    rownames(mircounts) <- rownames
+    
     write.table(mircounts,
-                file = paste(project,"mircounts",sep = "_"),
-                quote = TRUE, sep = "\t")
+                file = paste(project,"mircounts.tsv",sep = "_"),
+                quote = TRUE, sep = "\t", row.names = TRUE, col.names = TRUE)
   }else{
-    mircounts <- fread(paste(project,"mircounts",sep = "_"))
+    mircounts <- fread(paste(project,"mircounts.tsv",sep = "_"))
     head(colnames(mircounts))
     rownames <- mircounts$V1
     mircounts <- mircounts[,2:ncol(mircounts)]
