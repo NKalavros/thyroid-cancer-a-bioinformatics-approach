@@ -1,4 +1,4 @@
-mirlab_tcga_analysis <- function(mrna_matrix,microrna_matrix,cancer = 1,mrna_keep = 2000, microrna_keep = 100){
+mirlab_tcga_analysis <- function(mrna_matrix,microrna_matrix,cancer = 1,mrna_keep = 2000, microrna_keep = 100,top_targets = 20){
   #Packages needed
   require("miRLAB")
   require("edgeR")
@@ -63,10 +63,13 @@ mirlab_tcga_analysis <- function(mrna_matrix,microrna_matrix,cancer = 1,mrna_kee
   mi = MI("dataset.csv", cause, effect)
   print("Mutual information analysis complete")
   #predict miRNA targets using causal inference
-  ida=IDA(dataset, cause, effect, "stable", 0.01)
+  ida=IDA("dataset.csv", cause, effect, "stable", 0.01)
   print("IDA analysis complete")
   #predict miRNA targets using linear regression
   lasso=Lasso(dataset, cause, effect)
-  print("Lasso analysis complete, returning.")
+  print("Lasso analysis completed, merging results")
+  #Extract the top targets per miR
+  results <- BordaTopk(list(mi,ida,lasso),top_targets)
+  
   return(list(mi,ida,lasso))
 }
